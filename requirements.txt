@@ -1,0 +1,13 @@
+selenium
+beautifulsoup4
+pandas
+webdriver-manager
+requests
+pyautogui
+blue
+isort
+mkdocs
+colorama
+unidecode
+playwright
+google-generativeai 

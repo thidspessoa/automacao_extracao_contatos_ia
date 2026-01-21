@@ -1,0 +1,38 @@
+[tool.poetry]
+name = "extracao_contato_ia <thiagopessoa246@gmail.com>"
+version = "0.1.0"
+description = "Extração de informações de contato via OpenAI para o Excel"
+authors = ["Thiago Pessoa"]
+readme = "README.md"
+license = "Proprietary"
+packages = [
+    { include = "docs" },
+    { include = "src" },
+    { include = "tests" }
+]
+plataform = "Autoral"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+selenium = "^4.0.0"  # Utilizado para automações web
+beautifulsoup4 = "^4.9.3"  # Para manipular HTML
+pandas = "^1.3.3"  # Manipulação de dados
+pywin32 = "^301"  # Para interagir com o Windows (win32com)
+webdriver-manager = "^3.5.0"  # Gerenciamento do WebDriver
+requests = "^2.26.0"  # Para requisições HTTP
+unidecode = "^1.2.0"  # Para remoção de acentuação
+configparser = "^5.0.2"  # Para manipular arquivos de configuração INI
+pyautogui = "^0.9.53"  # Automação de tarefas no desktop
+sqlite3 = {version = "*", optional = true, markers = "python_version < '3.8'"}  # Banco de dados SQLite (não é necessário instalar explicitamente para Python >= 3.8)
+shutil = {version = "*", optional = true}  # Para manipular arquivos e diretórios (parte da biblioteca padrão do Python)
+win32com = {version = "*", optional = true}  # Parte do pywin32 para automação no Windows
+blue = {version = "*", optional = true} # Para formatar o código
+isort = {version = "*", optional = true } # Para ordenar em ordem alfabetical os imports
+mkdocs = {version = "*", optional = true } # Para documentar 
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.0"  # Para testes
+
+[[tool.poetry.source]]
+name_project = "extracao_contato_ia"
+url = "github.com" 

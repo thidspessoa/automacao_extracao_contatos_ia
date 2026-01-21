@@ -1,0 +1,33 @@
+# Ignore environment variables
+.env
+pyvenv.cfg
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+
+# Ignore virtual environment directories
+env/
+venv/
+.venv/
+Include/
+Lib/site-packages/
+Scripts/
+
+# Ignore log files
+*.log
+
+# Ignore o ambiente virtual
+happy_criacao_usuarios/
+
+# Ingore 
+create_json.py
+
+# Ignore databases
+.xlsx
+.xls
+
+# Ignore Pasta Base
+Base/
+bases/
+Bases/
