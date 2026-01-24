@@ -10,6 +10,7 @@ def main():
     # Importação de modulos
     from utils import ChromeDriver, ColorManager
     from extraction.controllers.instagram import InstagramExtractor
+    from extraction.controllers.website import WebSiteExtractor
     
     # Caminho para o arquivo que será lido
     from utils.config import SITES_FILE_PATH
@@ -21,6 +22,9 @@ def main():
     # Instância de referencia do chromedriver
     browser = webdriver.browser
 
+    # Variavel para controle de sucesso da execução
+    execution_successful: bool = False
+ 
     try:
         
         ColorManager.info('Iniciando a automação...')
@@ -47,8 +51,8 @@ def main():
                     
                     # Cria uma instancia do extrator de instagram
                     instagram_extractor: InstagramExtractor = InstagramExtractor(browser, site)
-                    instagram_extractor.extract_profile_data() # Metodo para extrair os dados do perfil
-            
+                    instagram_extractor.extract_html() # Metodo para extrair os dados do perfil
+
                     # # Executa a extração de contatos
                     # instagram_extractor.extract_contacts()
                     
@@ -57,16 +61,17 @@ def main():
                     
                     ColorManager.info('Iniciando extração de dados da landing page...')
                     
+                    # Cria uma instancia do extrator de website genérico
+                    website_extractor: WebSiteExtractor = WebSiteExtractor(browser, site)
+                    data_returned: dict = website_extractor.extract_html() # Metodo para extrair os dados do site
+                    response_ia: dict = website_extractor.extract_contacts(data_returned) # Metodo para extrair os contatos do html usando IA
+                    
+                    # Chamada de metodo para salvar os dados extraidos em planilha excell
                     
                     
-
-        
-        # Chama o modulo de tratamento do html e extração dos contatos usando IA
-        # Chama o modulo de disparo de mensagens no wpp
-
-        # Se o código chegar até aqui sem exceções, a execução foi bem-sucedida
+        # Marca a execução como bem sucedida
         execution_successful = True
-
+        
     except Exception as e:
 
         # Retorna uma saída de print de erro padronizada

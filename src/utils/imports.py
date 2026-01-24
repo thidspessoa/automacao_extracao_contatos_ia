@@ -20,10 +20,12 @@ from io import StringIO
 from time import sleep
 import inspect
 from typing import Any, Callable
-import google.generativeai as genai
 from pathlib import Path
 import urllib
 import urllib.parse
+
+from google import genai
+
 
 import pandas as pd
 from bs4 import BeautifulSoup
