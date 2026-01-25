@@ -33,7 +33,7 @@ class InstagramExtractor(Shape):
 
             self.browser.get(self.site_url)
             time.sleep(5)  # Aguarda o carregamento da página
-
+            
             # Clica em fechar o pop-up de registro de conta, se aparecer, usando actions chains, clicando na tecla enter
             actions = ActionChains(self.browser)
             actions.send_keys(Keys.ENTER).perform()

@@ -13,18 +13,21 @@ def main():
     from extraction.controllers.website import WebSiteExtractor
     
     # Caminho para o arquivo que será lido
-    from utils.config import SITES_FILE_PATH
+    from utils.config import SITES_FILE_PATH, CHROME_PROFILE_USER
 
 
     # Cria uma instancia da classe de gerenciamento do navegador
     webdriver = ChromeDriver()
+
+    # Adiciona perfil de usuário do chrome para instagram
+    webdriver.insert_options(user_data_dir=CHROME_PROFILE_USER)
 
     # Instância de referencia do chromedriver
     browser = webdriver.browser
 
     # Variavel para controle de sucesso da execução
     execution_successful: bool = False
- 
+    
     try:
         
         ColorManager.info('Iniciando a automação...')
@@ -44,9 +47,7 @@ def main():
                 
                 # Verifica se o site é do instagram
                 if "instagram.com" in site:
-                    
-                    continue # Stand-by para evitar execuções acidentais, pois vou desenvolver esse módulo ainda posteriormente
-                    
+                                        
                     ColorManager.info('Iniciando extração de dados do Instagram...')
                     
                     # Cria uma instancia do extrator de instagram
@@ -59,6 +60,8 @@ def main():
                 # Se for a landing page da empresa
                 else:
                     
+                    continue # Stand-by para evitar execuções acidentais, pois vou desenvolver esse módulo ainda posteriormente
+                    
                     ColorManager.info('Iniciando extração de dados da landing page...')
                     
                     # Cria uma instancia do extrator de website genérico
@@ -67,6 +70,7 @@ def main():
                     response_ia: dict = website_extractor.extract_contacts(data_returned) # Metodo para extrair os contatos do html usando IA
                     
                     # Chamada de metodo para salvar os dados extraidos em planilha excell
+
                     
                     
         # Marca a execução como bem sucedida
