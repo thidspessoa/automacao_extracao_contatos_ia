@@ -33,3 +33,10 @@ if not SITES_FILE_PATH.exists():
     raise FileNotFoundError(
         f"Arquivo de sites não encontrado em: {SITES_FILE_PATH}"
     )
+
+CHROME_PROFILE_USER = os.getenv("CHROME_PROFILE_INSTAGRAM")
+
+if not CHROME_PROFILE_USER:
+    raise ValueError(
+        "A variável de ambiente 'CHROME_PROFILE_INSTAGRAM' não está definida."
+    )

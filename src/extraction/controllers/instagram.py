@@ -24,17 +24,16 @@ class InstagramExtractor(Shape):
         self.site_url = site_url
         super().__init__()  # Chama o construtor da classe abstrata que já obtem o nome do arquivo
 
-    def extract_profile_data(self) -> dict:
+    def extract_html(self) -> dict:
         """Extrai dados do perfil do Instagram dado a URL do perfil"""
         try:
 
-            super().info_method('extract_profile_data')
-
+            super().info_method('extract_html')
             profile_data: dict = {}  # Dicionario para armazenar os dados do perfil
 
             self.browser.get(self.site_url)
             time.sleep(5)  # Aguarda o carregamento da página
-
+            
             # Clica em fechar o pop-up de registro de conta, se aparecer, usando actions chains, clicando na tecla enter
             actions = ActionChains(self.browser)
             actions.send_keys(Keys.ENTER).perform()
@@ -58,10 +57,12 @@ class InstagramExtractor(Shape):
             # Buscar APENAS a tag header
             header_html = soup.find('header')
 
+            # -----------------!!!!! DEBUG
             # Exibe o html do heaader para debug
             ColorManager.info(
                 f"Header HTML: {header_html.prettify() if header_html else 'N/A'}")
             time.sleep(1000)  # Pausa para debug
+            # -----------------!!!!! DEBUG
 
             if header_html:
 
@@ -70,39 +71,7 @@ class InstagramExtractor(Shape):
                     separator=' ', strip=True) if header_html else 'N/A'
 
                 # Armazena o texto dentro do dicionario
-                profile_data['header_text'] = header_text
-
-                # Encontra todas as tags de link dentro do header
-                links = header_html.find_all('a', href=True)
-
-                # Itera sobre cada link encontrado
-                for a in links:
-                    ColorManager.info(f"Analisando link: {a}")
-                    href = a['href']
-
-                    # Verifica se o link começa com o redirect padrão do instagram
-                    if href.startswith('https://l.instagram.com/'):
-
-                        # Quebra a URL em partes
-                        parsed_url = urllib.parse.urlparse(href)
-
-                        # Extrai os parâmetros da query
-                        query_params = urllib.parse.parse_qs(parsed_url.query)
-
-                        # Obtém o link real do parâmetro 'u'
-                        if 'u' in query_params:
-
-                            # O link real está na primeira posição da lista, decodificamos com unquote
-                            real_link_decoded = urllib.parse.unquote(
-                                query_params['u'][0])  # LInk real limpo e utilizável
-
-                            # Verifica se de fato o link é para redirecionamento ao whatsapp
-                            if 'wa.me' in real_link_decoded or 'whatsapp' in real_link_decoded.lower():
-                                profile_data['whatsapp_link'] = real_link_decoded
-                                ColorManager.warning(
-                                    f"Link do WhatsApp encontrado: {real_link_decoded}")
-                                # time.sleep(1000)  # Pausa para debug
-                                # break
+                profile_data['html_text'] = header_text
 
             else:
                 ColorManager.error("Header não encontrado.")
