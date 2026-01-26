@@ -36,8 +36,15 @@ class WebSiteExtractor(Shape):
             super().info_method('extract_html')
             data: dict = {}  # Dicionario para armazenar os dados extraídos
 
-            self.browser.get(self.site_url)
-            time.sleep(5)  # Aguarda o carregamento da página
+            # self.browser.set_page_load_timeout(60)
+
+            try:
+                self.browser.get(self.site_url)
+            except TimeoutException:
+                ColorManager.warning(f'Timeout ao carregar {self.site_url}')
+                return {"html_text": ""}
+
+            time.sleep(10)
 
             # Pega o HTML da pagina comb bs4
             soup: BeautifulSoup = BeautifulSoup(
@@ -45,6 +52,9 @@ class WebSiteExtractor(Shape):
 
             # Pega todo o texto do html recuperado pelo bs4
             html_text: str = soup.get_text(separator=' ', strip=True)
+            
+            
+            print('Dados da landing page: ' + html_text)
 
             # Remove linhas em branco excessivas
             # Separa o texto em linhas
@@ -104,6 +114,9 @@ class WebSiteExtractor(Shape):
             # Chama o metodo da classe responsavel por requisições a IA, que chamara a API do gemini
             ai_service: AIService = AIService()
             ia_response: dict = ai_service.call_ia(prompt) # Resposta da IA em formato de dicionario
+            
+            if not isinstance(ia_response, dict):
+                raise Exception("Resposta da IA não está no formato esperado de dicionário.")
 
             ColorManager.info(f"Resposta da IA: {ia_response}")
 

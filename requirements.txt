@@ -10,4 +10,5 @@ mkdocs
 colorama
 unidecode
 playwright
-google-generativeai 
+google-generativeai
+openpyxl
