@@ -33,13 +33,6 @@ class InstagramExtractor(Shape):
 
             self.browser.get(self.site_url)
             time.sleep(5)  # Aguarda o carregamento da página
-            
-            # Clica em fechar o pop-up de registro de conta, se aparecer, usando actions chains, clicando na tecla enter
-            actions = ActionChains(self.browser)
-            actions.send_keys(Keys.ENTER).perform()
-
-            # Aguarda alguns segundos para garantir o carregamento completo
-            time.sleep(3)
 
             # Clica no botão "...mais" na bio, se existr uma tag span com texto 'mais'
             try:
@@ -57,13 +50,6 @@ class InstagramExtractor(Shape):
             # Buscar APENAS a tag header
             header_html = soup.find('header')
 
-            # -----------------!!!!! DEBUG
-            # Exibe o html do heaader para debug
-            ColorManager.info(
-                f"Header HTML: {header_html.prettify() if header_html else 'N/A'}")
-            time.sleep(1000)  # Pausa para debug
-            # -----------------!!!!! DEBUG
-
             if header_html:
 
                 # Obtem o texto separado por espaços
@@ -73,6 +59,8 @@ class InstagramExtractor(Shape):
                 # Armazena o texto dentro do dicionario
                 profile_data['html_text'] = header_text
 
+                print('Dados do perfil extraídos com sucesso: ' + header_text)
+
             else:
                 ColorManager.error("Header não encontrado.")
 
@@ -80,3 +68,48 @@ class InstagramExtractor(Shape):
 
         except Exception as e:
             raise Exception(f"Erro ao extrair dados do perfil: {e}")
+
+    def extract_contacts(self, data: dict) -> dict:
+        """
+        Captura os dados do perfil em meio ao texto do HTML extraído usando IA
+
+        :param data: Dicionario contendo o texto HTML extraído
+        :type data: dict
+        """
+        # importa a classe de chamadas da API do gemini
+        from src.extraction.services.ai_service import AIService
+
+        try:
+
+            super().info_method('extract_contacts')
+
+            prompt: str = f"""
+                Extraia informações de contato do texto abaixo.
+                
+                Responda APENAS com um JSON válido.
+                NÃO use markdown.
+                NÃO use ```json.
+                NÃO adicione explicações.
+
+                Formato exato:
+                {{
+                    "emails": [],
+                    "telefones": [],
+                    "whatsapp": [],
+                    "nome_empresa": ""
+                }}
+                
+                Texto:
+                {data.get('html_text', '')}
+            """
+
+            # Chama o metodo da classe responsavel por requisições a IA, que chamara a API do gemini
+            ai_service: AIService = AIService()
+            ia_response: dict = ai_service.call_ia(prompt) # Resposta da IA em formato de dicionario
+
+            ColorManager.info(f"Resposta da IA: {ia_response}")
+
+            return ia_response
+
+        except Exception as e:
+            raise Exception(f"Erro ao extrair contatos do html usando IA: {e}")
