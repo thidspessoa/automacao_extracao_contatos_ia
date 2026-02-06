@@ -89,7 +89,8 @@ class ChromeDriver:
         download_directory=None,
         headless=False,
         disable_gpu=False,
-        user_agent=None
+        user_agent=None,
+        user_data_dir=None
     ):
         # Esse metodo sempre que chamado, fecha a instancia atual do navegador e cria uma nova instância com as opções configuradas
 
@@ -100,6 +101,13 @@ class ChromeDriver:
         if headless:
             chrome_options.add_argument('--headless')
             print(f'{Fore.YELLOW}Modo headless ativado{Fore.RESET}')
+
+        # Adicionar o diretório de dados do usuário
+        if user_data_dir:
+            chrome_options.add_argument(f'--user-data-dir={user_data_dir}')
+            print(
+                f'{Fore.YELLOW}Diretório de dados do usuário configurado: {user_data_dir}{Fore.RESET}'
+            )
 
         # Desabilitar a GPU
         if disable_gpu:

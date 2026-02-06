@@ -8,8 +8,8 @@ from utils.abstract_class import Shape
 from selenium.webdriver.common.keys import Keys
 
 
-class InstagramExtractor(Shape):
-    """Classe para extração de dados do Instagram"""
+class WebSiteExtractor(Shape):
+    """Classe para extração de dados do site da empresa"""
 
     def __init__(self, browser: webdriver.Chrome, site_url: str):
         """
@@ -17,7 +17,7 @@ class InstagramExtractor(Shape):
 
         :param browser: Descrição
         :type browser: webdriver.Chrome
-        :param site_url: Link do perfil do instagram
+        :param site_url: Link do site da empresa
         :type site_url: str
         """
         self.browser = browser
@@ -25,11 +25,16 @@ class InstagramExtractor(Shape):
         super().__init__()  # Chama o construtor da classe abstrata que já obtem o nome do arquivo
 
     def extract_html(self) -> dict:
-        """Extrai dados do perfil do Instagram dado a URL do perfil"""
+        """
+        Extraí o HTML do site da empresa dado a URL do site
+
+        :param browser: none 
+        :type browser: none
+        """
         try:
 
             super().info_method('extract_html')
-            profile_data: dict = {}  # Dicionario para armazenar os dados do perfil
+            data: dict = {}  # Dicionario para armazenar os dados extraídos
 
             # self.browser.set_page_load_timeout(60)
 
@@ -41,46 +46,42 @@ class InstagramExtractor(Shape):
 
             time.sleep(10)
 
-            # Clica no botão "...mais" na bio, se existr uma tag span com texto 'mais'
-            try:
-                more_button = self.browser.find_element(
-                    By.XPATH, "//span[text()='mais']")
-                more_button.click()
-                time.sleep(5)  # Aguarda o carregamento do texto completo
-            except NoSuchElementException:
-                ColorManager.error(
-                    'Botão "mais" não encontrado, continuando...')
-                pass  # Se o botão não existir, continua normalmente
+            # Pega o HTML da pagina comb bs4
+            soup: BeautifulSoup = BeautifulSoup(
+                self.browser.page_source, 'html.parser')
 
-            soup = BeautifulSoup(self.browser.page_source, 'html.parser')
+            # Pega todo o texto do html recuperado pelo bs4
+            html_text: str = soup.get_text(separator=' ', strip=True)
+            
+            
+            print('Dados da landing page: ' + html_text)
 
-            # Buscar APENAS a tag header
-            header_html = soup.find('header')
+            # Remove linhas em branco excessivas
+            # Separa o texto em linhas
+            lines: list = (line.strip() for line in html_text.splitlines())
+            chunks: list = (phrase.strip() for line in lines for phrase in line.split(
+                "  "))  # Separa o texto em pedaços menores
+            # Junta tudo de volta, removendo linhas vazias
+            text: str = '\n'.join(chunk for chunk in chunks if chunk)
 
-            if header_html:
+            # Truncar o texto se for muito grande para evitar estourar o limite de tokens
+            # Geralmente contatos estão no rodapé ou no início da página, 15k caracteres costuma ser suficiente
+            # Truncar é o processo de cortar o texto para um tamanho máximo
+            text = text[:15000]
 
-                # Obtem o texto separado por espaços
-                header_text = header_html.get_text(
-                    separator=' ', strip=True) if header_html else 'N/A'
+            # Salva no dicionario de dados
+            data['html_text'] = text
 
-                # Armazena o texto dentro do dicionario
-                profile_data['html_text'] = header_text
-
-                print('Dados do perfil extraídos com sucesso: ' + header_text)
-
-            else:
-                ColorManager.error("Header não encontrado.")
-
-            return profile_data
+            return data
 
         except Exception as e:
-            raise Exception(f"Erro ao extrair dados do perfil: {e}")
+            raise Exception(f"Erro ao extrair dados do site: {e}")
 
     def extract_contacts(self, data: dict) -> dict:
         """
-        Captura os dados do perfil em meio ao texto do HTML extraído usando IA
+        Captura os dados da empresa em meio ao HTML extraído usando IA
 
-        :param data: Dicionario contendo o texto HTML extraído
+        :param data: Dicionario contendo o HTML extraído
         :type data: dict
         """
         # importa a classe de chamadas da API do gemini
@@ -113,13 +114,12 @@ class InstagramExtractor(Shape):
             # Chama o metodo da classe responsavel por requisições a IA, que chamara a API do gemini
             ai_service: AIService = AIService()
             ia_response: dict = ai_service.call_ia(prompt) # Resposta da IA em formato de dicionario
-
+            
             if not isinstance(ia_response, dict):
                 raise Exception("Resposta da IA não está no formato esperado de dicionário.")
 
             ColorManager.info(f"Resposta da IA: {ia_response}")
 
-            
             return ia_response
 
         except Exception as e:
