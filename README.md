@@ -16,6 +16,7 @@ O objetivo principal é criar uma solução **modular, escalável e orientada a 
 * `OpenPyXL / Excel` — persistência dos dados extraídos
 * `Virtualenv` — isolamento do ambiente de desenvolvimento
 * `Git / GitHub / Github CLI` — versionamento e controle de código
+* `Gemini API` — Para limpeza e estruturação dos dados brutos extraídos da web
 
 ---
 
@@ -69,6 +70,7 @@ Este projeto consolidou conhecimentos importantes no contexto de **automação e
 
 * Estruturação de dados com Pandas
 * Normalização de informações inconsistentes
+* Tratamento de dados brutos raspados da web utilizando Inteligência Artifical
 * Exportação confiável para Excel
 
 ### 🏗️ Organização de Código
